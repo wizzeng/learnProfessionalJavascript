@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<button onclick="preload()">Preload</button>
+<button onclick="addScript()">Add Script</button>
+</body>
+<script>
+    // create a preload link
+    function preload() {
+        const link = document.createElement('link');
+        link.as = 'script';
+        link.rel = 'preload';
+        link.href = 'main.js'
+        document.head.append(link);
+    }
+
+    function addScript() {
+        // if resource is preload, <script> can use this resource directly rather than execute after loading.
+        const script = document.createElement('script');
+        script.src = 'main.js';
+        document.body.append(script);
+    }
+</script>
+</html>

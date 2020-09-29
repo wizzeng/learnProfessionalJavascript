@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Identify Array</title>
+</head>
+<body>
+<iframe src="child.html"></iframe>
+</body>
+<script>
+    const $iframe = document.querySelector('iframe');
+    const iframeWindow = $iframe ? $iframe.contentWindow : null;
+    if (iframeWindow) {
+        window.addEventListener('arrReady', (data) => {
+            console.log(data)
+        })
+        const childArr = iframeWindow.childArr;
+        console.log(childArr);
+        console.log(childArr instanceof Array);
+        console.log(Array.isArray(childArr));
+    }
+</script>
+</html>

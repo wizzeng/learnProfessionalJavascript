@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+
+</body>
+<script>
+    const script = document.createElement('script');
+    script.src = 'external.js'
+    // Normally, there is no differences between `true` and `false` with property `async`
+    // because javascript must complete it sync task before execute another task
+    // but there are some issues when browsers not support this attribute run this code.
+    script.async = false
+    document.body.appendChild(script);
+    console.log('Run inner');
+    console.log(script.async);
+</script>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    Hello
+</div>
+</body>
+<script>
+
+    const map = new Map();
+    // const map = new WeakMap();
+    {
+        const $div = document.querySelector('div');
+        map.set($div, true);
+        // div will be removed from map automatically when the map is 'weak',
+        // otherwise, it will be only removed after leaving the page.
+        $div.remove();
+    }
+
+</script>
+</html>
