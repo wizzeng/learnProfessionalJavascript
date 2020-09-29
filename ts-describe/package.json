@@ -1,0 +1,15 @@
+{
+  "name": "ts-describe",
+  "version": "1.0.0",
+  "description": "自己的学习经验，在学习过程中，及时查看 Typescript 中的声明文件，能够深入了解各个接口、对象之间 的关系，从而少走弯路。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.0.3"
+  }
+}
