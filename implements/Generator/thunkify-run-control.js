@@ -20,29 +20,36 @@ function Thunkify(fn) {
 function mockAjax(url, method, callback) {
     console.log(`${method} - ${url}`);
     setTimeout(() => {
-        callback({
-            data: 'Hello',
+        callback('ERR', {
+            greeting: 'Hello',
         })
     })
 }
 
 const ajax = Thunkify(mockAjax)('http://google.com', 'GET');
 
+// like async
 function* fetchData() {
-    const data = yield ajax;
-    console.log(data);
+    try {
+        const data = yield ajax;
+        console.log(data);
+    } catch (err) {
+        console.log('Error Occur inside', err);
+    }
 }
 
 function run(gen) {
     const g = gen();
 
-    function next(data) {
+    function next(...[err, data]) {
+        // throw error into generator
+        if (err) g.throw(err);
         const result = g.next(data);
         if (result.done) return;
         result.value(next);
     }
 
-    next();
+    next()
 }
 
 run(fetchData);
