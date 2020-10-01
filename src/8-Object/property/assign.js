@@ -31,6 +31,4 @@ runTest(function assignNotEnumerable() {
     let src1 = {};
     // Print:Object.defineProperty('')
 
-}, {
-    comment: false,
 });

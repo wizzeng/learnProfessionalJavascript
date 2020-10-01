@@ -29,14 +29,20 @@ function createCommentPrintFunction(fn) {
     const str = fn.toString();
     const beforeIndex = str.indexOf('{');
     const lastIndex = str.lastIndexOf('}');
-
     const beforeText = str.slice(0, beforeIndex);
-    const args = beforeText.slice(beforeText.indexOf('(') + 1, beforeText.lastIndexOf(')')).replace(/\s/g, '').split(',');
+    const args = beforeText.slice(
+        beforeText.indexOf('(') + 1,
+        beforeText.lastIndexOf(')')
+    )
+        .replace(/\s/g, '')
+        .split(',');
     const bodyStr = str.slice(beforeIndex + 1, lastIndex);
 
     const commentReg = /\/\/\s+Print:\s*(.+)/g;
     const replacedBody = bodyStr.replace(/'/g, '"')
-        .replace(commentReg, 'colorConsole({ str: \'Comment: $1\', color: "yellow" })').trim();
+        .replace(commentReg,
+            'colorConsole({ str: \'Comment: $1\', color: "yellow" })')
+        .trim();
 
     return new Function(...args, replacedBody);
 }
@@ -51,10 +57,8 @@ module.exports = {
     runTest: function (fn, option, ...args) {
         const displayName = `Knowledge ${fn.name || createRandomText()}`
         if (typeof fn !== 'function') return;
-        if (option) {
-            if (option.comment !== false) {
-                fn = createCommentPrintFunction(fn);
-            }
+        if (!option || option.comment !== false) {
+            fn = createCommentPrintFunction(fn);
         }
         const date = new Date();
         colorConsole({
