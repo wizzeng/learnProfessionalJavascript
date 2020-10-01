@@ -93,14 +93,28 @@ function printTitle(displayName, printTime) {
     }
 }
 
+function printTimeUsage(time, isShow) {
+    if (isShow !== false) {
+        colorConsole({
+            str: `Time Usage: `,
+            color: 'blue'
+        }, {
+            str: `${time.toFixed(5)}ms`,
+            color: 'black',
+            bgColor: 'greenBG'
+        });
+    }
+}
+
 module.exports = {
     /**
      * Run your function with comment printing and time-usage collection.
      * @param { function } fn
-     * @param { {  comment: boolean, showTimeUsage: boolean, time: boolean } } [option]
+     * @param { {  comment: boolean, timeUsage: boolean, time: boolean } } [option]
      * @param { any } [args]
      */
     runTest: function (fn, option, ...args) {
+        console.log()
         const displayName = `Knowledge ${fn.name || createRandomText()}`
         if (typeof fn !== 'function') return;
         fn = convertExecutionFunction(fn);
@@ -108,15 +122,6 @@ module.exports = {
         const startTime = performance.now();
         fn.apply(this, args);
         const timeUsage = performance.now() - startTime;
-        if (!option || option.showTimeUsage !== false) {
-            colorConsole({
-                str: `Time Usage: `,
-                color: 'blue'
-            }, {
-                str: `${timeUsage.toFixed(5)}ms`,
-                color: 'black',
-                bgColor: 'greenBG'
-            });
-        }
+        printTimeUsage(timeUsage, (option || {}).timeUsage);
     }
 }
