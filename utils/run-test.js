@@ -1,6 +1,8 @@
 const { performance } = require('perf_hooks');
 const { colorConsole } = require('./print.js');
-const textOptions = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+const TEXT_OPTIONS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+const COMMENT_REG = /\/\/\s+Print:\s*(.+)/g;
+const CONSOLE_REG = /(console\.log\(.+\))(;)?/g;
 
 // the function created by new Function() can only access global scope
 global.colorConsole = colorConsole;
@@ -14,18 +16,39 @@ function createRandomText(length = 5) {
     let result = '';
 
     for (let i = 0; i < length; i++) {
-        result += textOptions[(Math.random() * 62).toFixed(0)];
+        result += TEXT_OPTIONS[(Math.random() * 62).toFixed(0)];
     }
 
     return result;
 }
 
 /**
- * Print any comment in function when execute it.
- * @param {function} fn
- * @return {function}
+ * Convert comments start with 'Print' into executable print statement.
+ * @param {string} bodyStr
+ * @return {string}
  */
-function createCommentPrintFunction(fn) {
+function createCommentPrintFunction(bodyStr) {
+    return bodyStr.replace(/'/g, '"')
+        .replace(COMMENT_REG,
+            'colorConsole({ str: "Comment: $1", color: "yellow" })')
+        .trim();
+}
+
+/**
+ * Print console.log statement string when called it.
+ * @param {string} bodyStr
+ * @return { string }
+ */
+function replaceConsole(bodyStr) {
+    return bodyStr.replace(CONSOLE_REG, 'colorConsole({ str: "// 👇 $1" , color: "green" }); $1;')
+}
+
+/**
+ * Convert function to add extra feature.
+ * @param fn
+ * @param { {  comment: boolean, showTimeUsage: boolean } } [option]
+ */
+function convertExecutionFunction(fn, option) {
     const str = fn.toString();
     const beforeIndex = str.indexOf('{');
     const lastIndex = str.lastIndexOf('}');
@@ -36,43 +59,58 @@ function createCommentPrintFunction(fn) {
     )
         .replace(/\s/g, '')
         .split(',');
-    const bodyStr = str.slice(beforeIndex + 1, lastIndex);
+    let bodyStr = str.slice(beforeIndex + 1, lastIndex);
 
-    const commentReg = /\/\/\s+Print:\s*(.+)/g;
-    const replacedBody = bodyStr.replace(/'/g, '"')
-        .replace(commentReg,
-            'colorConsole({ str: \'Comment: $1\', color: "yellow" })')
-        .trim();
+    if (!option || option.comment !== false) {
+        bodyStr = createCommentPrintFunction(bodyStr);
+    }
+    if (!option || option.comment !== false) {
+        bodyStr = replaceConsole(bodyStr);
+    }
 
-    return new Function(...args, replacedBody);
+    return new Function(...args, bodyStr);
+}
+
+/**
+ * Print Title
+ * @param displayName
+ * @param printTime
+ */
+function printTitle(displayName, printTime) {
+    const date = new Date();
+    if (printTime !== false) {
+        colorConsole({
+            str: `[${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] `,
+        }, {
+            str: displayName,
+            color: 'red',
+        });
+    } else {
+        colorConsole({
+            str: displayName,
+            color: 'red',
+        })
+    }
 }
 
 module.exports = {
     /**
      * Run your function with comment printing and time-usage collection.
      * @param { function } fn
-     * @param { {  comment: boolean, showTimeUsage: boolean } } [option]
+     * @param { {  comment: boolean, showTimeUsage: boolean, time: boolean } } [option]
      * @param { any } [args]
      */
     runTest: function (fn, option, ...args) {
         const displayName = `Knowledge ${fn.name || createRandomText()}`
         if (typeof fn !== 'function') return;
-        if (!option || option.comment !== false) {
-            fn = createCommentPrintFunction(fn);
-        }
-        const date = new Date();
-        colorConsole({
-            str: `[${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] `,
-        }, {
-            str: displayName,
-            color: 'red',
-        })
+        fn = convertExecutionFunction(fn);
+        printTitle(displayName, (option || {}).time);
         const startTime = performance.now();
         fn.apply(this, args);
         const timeUsage = performance.now() - startTime;
         if (!option || option.showTimeUsage !== false) {
             colorConsole({
-                str: `Time Usage ${displayName}: `,
+                str: `Time Usage: `,
                 color: 'blue'
             }, {
                 str: `${timeUsage.toFixed(5)}ms`,
