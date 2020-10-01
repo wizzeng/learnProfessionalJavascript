@@ -29,6 +29,12 @@ runTest(function () {
 
 runTest(function assignNotEnumerable() {
     let src1 = {};
-    // Print:Object.defineProperty('')
-
+    // Print: create an non-enumerable property
+    Object.defineProperty(src1, 'p', {
+        value: 1,
+    });
+    // Print: Copy this property using Object.assign to target
+    const target = Object.assign({}, src1);
+    // Print: copy FAILED
+    console.log('Target description: ', Object.getOwnPropertyDescriptors(target));
 });
