@@ -1,6 +1,6 @@
-const { knowledge } = require('../../../utils.js');
+const { runTest } = require('../../../utils/run-test.js');
 
-knowledge(function () {
+runTest(function () {
     let src1 = {
         set a(val) {
             this.a = val;
@@ -27,6 +27,10 @@ knowledge(function () {
 });
 
 
-knowledge(function () {
-    let src1 = {}
+runTest(function assignNotEnumerable() {
+    let src1 = {};
+    // Print:Object.defineProperty('')
+
+}, {
+    comment: false,
 });
